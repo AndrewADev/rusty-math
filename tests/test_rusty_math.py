@@ -1,11 +1,20 @@
-import rusty_math
+from rusty_math import Vec3
 
-print(rusty_math.add(3, 4))
-print(rusty_math.subtract(10, 3))
-print(rusty_math.multiply(6, 7))
-print(rusty_math.divide(10, 4))
+a = Vec3(1, 0, 0)
+b = Vec3(0, 1, 0)
+
+print(a)                  # Vec3(1, 0, 0)
+print(a.dot(b))           # 0.0  (perpendicular)
+print(a.cross(b))         # Vec3(0, 0, 1)  (z-axis)
+print(a.magnitude())      # 1.0
+print(a.normalize())      # Vec3(1, 0, 0)  (already unit)
+print(a.angle(b))         # 1.5707...  (π/2 radians)
+
+print(a + b)              # Vec3(1, 1, 0)
+print(a - b)              # Vec3(1, -1, 0)
+print(a * 3)              # Vec3(3, 0, 0)
 
 try:
-    rusty_math.divide(1, 0)
-except ZeroDivisionError as e:
-    print(f"ZeroDivisionError: {e}")
+    Vec3(0, 0, 0).normalize()
+except ValueError as e:
+    print(f"ValueError: {e}")
