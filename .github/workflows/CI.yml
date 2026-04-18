@@ -19,6 +19,25 @@ permissions:
   contents: read
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Build and install
+        run: uv run maturin develop
+      - name: Run tests
+        run: uv run pytest tests/
+
   linux:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
