@@ -22,16 +22,25 @@ tasks:
     silent: true
     cmds:
       - |
-        git fetch --tags
+        git fetch --tags --force
         next=$(git cliff --bumped-version)
         bump_and_tag() {
           task version -- ${1#v}
           git add Cargo.toml Cargo.lock
-          git commit -m "chore: bump version to ${1}"
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: bump version to ${1}"
+          fi
           git tag "${1}"
         }
-        if git tag | grep -q "^${next}$"; then
+        if git ls-remote --tags origin | grep -q "refs/tags/${next}$"; then
+          if ! git merge-base --is-ancestor "${next}" HEAD; then
+            echo "Error: ${next} exists on remote but is not in local history."
+            exit 1
+          fi
           echo "Resuming aborted release ${next}..."
+        elif git tag | grep -q "^${next}$"; then
+          echo "Error: ${next} exists locally but is not an ancestor of HEAD. Delete or move the tag manually."
+          exit 1
         else
           bump_and_tag "${next}"
         fi
