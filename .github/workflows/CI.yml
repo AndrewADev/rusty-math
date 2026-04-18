@@ -14,12 +14,14 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: conform
       - name: Lint
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
-          pipx install conform
           git log --format='%H' "${BASE}".."${HEAD}" | while read sha; do
             git log -1 --format='%B' "$sha" > /tmp/msg.txt
             conform enforce --commit-msg-file /tmp/msg.txt
