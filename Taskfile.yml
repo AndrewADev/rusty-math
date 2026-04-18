@@ -22,22 +22,29 @@ tasks:
     cmds:
       - |
         next=$(git cliff --bumped-version)
+        bump_and_tag() {
+          if ! grep -q "^version = \"${1#v}\"" Cargo.toml; then
+            task version -- ${1#v}
+            git add Cargo.toml Cargo.lock
+            git commit -m "chore: bump version to ${1}"
+          fi
+          git tag "${1}"
+        }
         if git tag | grep -q "^${next}$"; then
-          echo "Resuming aborted release ${next}..."
+          if git merge-base --is-ancestor "${next}" HEAD; then
+            echo "Resuming aborted release ${next}..."
+          else
+            echo "Tag ${next} exists but is unreachable from HEAD — recreating..."
+            git tag -d "${next}"
+            bump_and_tag "${next}"
+          fi
         else
-          task version -- ${next#v}
-          git add Cargo.toml Cargo.lock
-          git commit -m "chore: bump version to ${next}"
-          git tag "${next}"
+          bump_and_tag "${next}"
         fi
-        echo "NEXT_TAG=${next}" > .release_env
       - task: release-push
 
   release-push:
     internal: true
     prompt: "Push to origin and trigger release?"
     cmds:
-      - |
-        source .release_env
-        git push origin main "${NEXT_TAG}"
-        rm .release_env
+      - git push origin main "$(git describe --tags --abbrev=0)"
