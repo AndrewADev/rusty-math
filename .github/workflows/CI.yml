@@ -7,6 +7,24 @@ permissions:
   contents: read
 
 jobs:
+  commits:
+    name: Commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Lint
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          pipx install conform
+          git log --format='%H' "${BASE}".."${HEAD}" | while read sha; do
+            git log -1 --format='%B' "$sha" > /tmp/msg.txt
+            conform enforce --commit-msg-file /tmp/msg.txt
+          done
+
   test:
     runs-on: ubuntu-latest
     strategy:
