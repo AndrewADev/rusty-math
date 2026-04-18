@@ -1,0 +1,15 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - uv run maturin develop
+
+  test:
+    deps: [build]
+    cmds:
+      - uv run pytest tests/
+
+  version:
+    cmds:
+      - cargo set-version {{.CLI_ARGS}}
