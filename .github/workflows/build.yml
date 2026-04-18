@@ -25,9 +25,9 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --locked --out dist
+          args: --release --locked --out dist --find-interpreter
           manylinux: auto
-          interpreter: 3.10 3.11 3.12 3.13 3.14
+          before-script-linux: rm -rf /opt/python/pp* /usr/local/bin/pypy*
       - name: Upload wheels
         uses: actions/upload-artifact@v6
         with:
