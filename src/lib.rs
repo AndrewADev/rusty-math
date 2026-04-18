@@ -1,5 +1,8 @@
 use pyo3::prelude::*;
+use pyo3_stub_gen::define_stub_info_gatherer;
+use pyo3_stub_gen::derive::*;
 
+#[gen_stub_pyclass(module = "rusty_math")]
 #[pyclass(from_py_object)]
 #[derive(Clone, Copy)]
 struct Vec3 {
@@ -11,6 +14,7 @@ struct Vec3 {
     z: f64,
 }
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl Vec3 {
     #[new]
@@ -72,25 +76,30 @@ impl Vec3 {
 #[pymodule]
 mod rusty_math {
     use pyo3::prelude::*;
+    use pyo3_stub_gen::derive::*;
 
     #[pymodule_export]
     use crate::Vec3;
 
+    #[gen_stub_pyfunction(module = "rusty_math")]
     #[pyfunction]
     fn add(a: f64, b: f64) -> f64 {
         a + b
     }
 
+    #[gen_stub_pyfunction(module = "rusty_math")]
     #[pyfunction]
     fn subtract(a: f64, b: f64) -> f64 {
         a - b
     }
 
+    #[gen_stub_pyfunction(module = "rusty_math")]
     #[pyfunction]
     fn multiply(a: f64, b: f64) -> f64 {
         a * b
     }
 
+    #[gen_stub_pyfunction(module = "rusty_math")]
     #[pyfunction]
     fn divide(a: f64, b: f64) -> PyResult<f64> {
         if b == 0.0 {
@@ -100,3 +109,5 @@ mod rusty_math {
         }
     }
 }
+
+define_stub_info_gatherer!(stub_info);

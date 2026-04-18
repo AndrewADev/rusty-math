@@ -51,3 +51,5 @@ jobs:
           uv run maturin develop
       - name: Run tests
         run: uv run pytest tests/
+      - name: Check types
+        run: uv run pyright tests/
