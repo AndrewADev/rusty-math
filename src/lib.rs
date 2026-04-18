@@ -1,13 +1,30 @@
 use pyo3::prelude::*;
 
-/// A Python module implemented in Rust.
 #[pymodule]
 mod rusty_math {
     use pyo3::prelude::*;
 
-    /// Formats the sum of two numbers as string.
     #[pyfunction]
-    fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-        Ok((a + b).to_string())
+    fn add(a: f64, b: f64) -> f64 {
+        a + b
+    }
+
+    #[pyfunction]
+    fn subtract(a: f64, b: f64) -> f64 {
+        a - b
+    }
+
+    #[pyfunction]
+    fn multiply(a: f64, b: f64) -> f64 {
+        a * b
+    }
+
+    #[pyfunction]
+    fn divide(a: f64, b: f64) -> PyResult<f64> {
+        if b == 0.0 {
+            Err(pyo3::exceptions::PyZeroDivisionError::new_err("division by zero"))
+        } else {
+            Ok(a / b)
+        }
     }
 }
