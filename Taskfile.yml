@@ -19,32 +19,32 @@ tasks:
       - cargo set-version {{.CLI_ARGS}}
 
   release:
+    silent: true
     cmds:
       - |
+        git fetch --tags
         next=$(git cliff --bumped-version)
         bump_and_tag() {
-          if ! grep -q "^version = \"${1#v}\"" Cargo.toml; then
-            task version -- ${1#v}
-            git add Cargo.toml Cargo.lock
-            git commit -m "chore: bump version to ${1}"
-          fi
+          task version -- ${1#v}
+          git add Cargo.toml Cargo.lock
+          git commit -m "chore: bump version to ${1}"
           git tag "${1}"
         }
         if git tag | grep -q "^${next}$"; then
-          if git merge-base --is-ancestor "${next}" HEAD; then
-            echo "Resuming aborted release ${next}..."
-          else
-            echo "Tag ${next} exists but is unreachable from HEAD — recreating..."
-            git tag -d "${next}"
-            bump_and_tag "${next}"
-          fi
+          echo "Resuming aborted release ${next}..."
         else
           bump_and_tag "${next}"
         fi
+        echo "next=${next}" > .release_env
+        echo "Ready to release ${next}."
       - task: release-push
 
   release-push:
     internal: true
-    prompt: "Push to origin and trigger release?"
+    silent: true
+    prompt: "Push to origin?"
     cmds:
-      - git push origin main "$(git describe --tags --abbrev=0)"
+      - |
+        . .release_env
+        git push origin main "${next}"
+        rm .release_env
