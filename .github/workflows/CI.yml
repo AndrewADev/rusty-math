@@ -14,9 +14,13 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: conform
+      - name: Install conform
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest=$(gh release list --repo siderolabs/conform --limit 1 --json tagName --jq '.[0].tagName')
+          gh release download "$latest" --repo siderolabs/conform --pattern 'conform-linux-amd64' --dir /tmp
+          install -m 755 /tmp/conform-linux-amd64 /usr/local/bin/conform
       - name: Lint
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
