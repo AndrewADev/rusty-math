@@ -6,8 +6,16 @@ Experimenting with a Python package written in Rust.
 
 - [Rust](https://rustup.rs/)
 - [uv](https://docs.astral.sh/uv/)
+- [Task](https://taskfile.dev/#/installation)
+- [git-cliff](https://git-cliff.org/docs/installation) (for releases)
 
 ## Development
+
+Install dependencies:
+
+```bash
+uv sync --dev
+```
 
 Build and run tests:
 
@@ -15,6 +23,14 @@ Build and run tests:
 task build
 task test
 ```
+
+To cut a release:
+
+```bash
+task release
+```
+
+This bumps the version based on conventional commits since the last tag, commits, tags, and pushes.
 
 ## Installation
 
