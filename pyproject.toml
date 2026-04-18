@@ -17,5 +17,6 @@ dev = ["pytest"]
 
 [dependency-groups]
 dev = [
+    "maturin>=1.13,<2.0",
     "pytest>=8.3.5",
 ]

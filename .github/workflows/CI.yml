@@ -34,7 +34,9 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Build and install
-        run: uv run maturin develop
+        run: |
+          uv sync --dev
+          uv run maturin develop
       - name: Run tests
         run: uv run pytest tests/
 
